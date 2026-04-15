@@ -1,0 +1,11 @@
+let storage = {}
+
+export async function uploadToShelby(data) {
+  const id = 'blob_' + Math.random().toString(36).substring(7)
+  storage[id] = data
+  return id
+}
+
+export async function fetchFromShelby(id) {
+  return storage[id] || null
+}
