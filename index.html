@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shelby Smart Cache</title>
+</head>
+<body>
+
+<h1>Shelby Smart Cache</h1>
+
+<textarea id="content" placeholder="Enter data"></textarea>
+<br>
+<button onclick="upload()">Upload</button>
+
+<h2>Blobs</h2>
+<ul id="list"></ul>
+
+<script>
+const API = 'http://localhost:3000'
+
+async function upload() {
+  const content = document.getElementById('content').value
+
+  await fetch(API + '/upload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content })
+  })
+
+  load()
+}
+
+async function load() {
+  const res = await fetch(API + '/stats')
+  const data = await res.json()
+
+  const list = document.getElementById('list')
+  list.innerHTML = ''
+
+  data.forEach(item => {
+    const li = document.createElement('li')
+
+    li.innerHTML = `
+      ${item.id} | Reads: ${item.reads} | ${item.status} | Reward: $${item.reward.toFixed(2)}
+      <button onclick="read('${item.id}')">Read</button>
+    `
+
+    list.appendChild(li)
+  })
+}
+
+async function read(id) {
+  await fetch(API + '/read/' + id)
+  load()
+}
+
+load()
+</script>
+
+</body>
+</html>
